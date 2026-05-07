@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+ use Illuminate\Database\Eloquent\Relations\BelongsTo;
+  use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password','role','branch_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -29,4 +31,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function branch(): BelongsTo {
+    return $this->belongsTo(Branch::class);
+}
+public function purchaseOrders(): HasMany {
+    return $this->hasMany(PurchaseOrder::class, 'procurement_manager_id');
+}
+public function branchRequests(): HasMany {
+    return $this->hasMany(BranchRequest::class, 'branch_manager_id');
+}
 }

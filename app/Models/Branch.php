@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Branch extends Model
+{
+    protected $Fillable=['name','location'];
+
+     public function users() { return $this->hasMany(User::class); }
+    public function branchRequests() { return $this->hasMany(BranchRequest::class); }
+}

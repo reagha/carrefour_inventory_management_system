@@ -11,11 +11,58 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
+                
+<!-- Navigation Links -->
+<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+    
+    <!-- EVERYONE: Dashboard -->
+    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+        {{ __('Dashboard') }}
+    </x-nav-link>
+
+    <!-- MODULE 1: ADMIN ZONE (You) -->
+    @if(auth()->user()->role === 'admin')
+        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+            {{ __('System Users') }}
+        </x-nav-link>
+    @endif
+
+    <!-- MODULE 2: PROCUREMENT ZONE (Teammate 2) -->
+    @if(in_array(auth()->user()->role,['admin', 'procurement']))
+        <!-- Teammate 2 will change the href="#" later! -->
+        <x-nav-link href="#" :active="false">
+            {{ __('Suppliers') }}
+        </x-nav-link>
+        <x-nav-link href="#" :active="false">
+            {{ __('Purchase Orders') }}
+        </x-nav-link>
+    @endif
+
+    <!-- MODULE 3: WAREHOUSE ZONE (Teammate 3) -->
+    @if(in_array(auth()->user()->role, ['admin', 'warehouse']))
+        <!-- Teammate 3 will change the href="#" later! -->
+        <x-nav-link href="#" :active="false">
+            {{ __('Products & Stock') }}
+        </x-nav-link>
+    @endif
+
+    <!-- MODULE 4: BRANCH MANAGER ZONE (Teammate 4) -->
+    @if(in_array(auth()->user()->role, ['admin', 'branch_manager']))
+        <!-- Teammate 4 will change the href="#" later! -->
+        <x-nav-link href="#" :active="false">
+            {{ __('Branch Requests') }}
+        </x-nav-link>
+    @endif
+
+    <!-- MODULE 5: AUDITOR ZONE (Teammate 5) -->
+    @if(in_array(auth()->user()->role, ['admin', 'auditor']))
+        <!-- Teammate 5 will change the href="#" later! -->
+        <x-nav-link href="#" :active="false">
+            {{ __('System Reports') }}
+        </x-nav-link>
+    @endif
+
+</div>
             </div>
 
             <!-- Settings Dropdown -->
@@ -64,37 +111,49 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+   <div class="pt-2 pb-3 space-y-1">
+    
+    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+        {{ __('Dashboard') }}
+    </x-responsive-nav-link>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
+    <!-- ADMIN ZONE -->
+    @if(auth()->user()->role === 'admin')
+        <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+            {{ __('System Users') }}
+        </x-responsive-nav-link>
+    @endif
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+    <!-- PROCUREMENT ZONE -->
+    @if(in_array(auth()->user()->role, ['admin', 'procurement']))
+        <x-responsive-nav-link href="#" :active="false">
+            {{ __('Suppliers') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link href="#" :active="false">
+            {{ __('Purchase Orders') }}
+        </x-responsive-nav-link>
+    @endif
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
+    <!-- WAREHOUSE ZONE -->
+    @if(in_array(auth()->user()->role, ['admin', 'warehouse']))
+        <x-responsive-nav-link href="#" :active="false">
+            {{ __('Products & Stock') }}
+        </x-responsive-nav-link>
+    @endif
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- BRANCH MANAGER ZONE -->
+    @if(in_array(auth()->user()->role, ['admin', 'branch_manager']))
+        <x-responsive-nav-link href="#" :active="false">
+            {{ __('Branch Requests') }}
+        </x-responsive-nav-link>
+    @endif
+
+    <!-- AUDITOR ZONE -->
+    @if(in_array(auth()->user()->role, ['admin', 'auditor']))
+        <x-responsive-nav-link href="#" :active="false">
+            {{ __('System Reports') }}
+        </x-responsive-nav-link>
+    @endif
+
+</div>
 </nav>

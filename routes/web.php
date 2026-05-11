@@ -12,7 +12,7 @@ Route::get('/', function () {
 // ALL LOGGED-IN USERS (Common Area)
 // ==========================================
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Everyone can see the main dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -36,7 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // Admins and Procurement Managers can access this zone
     Route::middleware(['role:admin,procurement'])->group(function () {
-        
+
         // Example: Teammate 2 will put their routes here later!
         // Route::resource('suppliers', SupplierController::class);
         // Route::resource('purchase-orders', PurchaseOrderController::class);
@@ -48,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // Admins and Warehouse Workers can access this zone
     Route::middleware(['role:admin,warehouse'])->group(function () {
-        
+
         // Example: Teammate 3 will put their routes here later!
         // Route::resource('products', ProductController::class);
         // Route::get('warehouse/dispatch', [DispatchController::class, 'index']);
@@ -60,9 +60,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // Admins and Branch Managers can access this zone
     Route::middleware(['role:admin,branch_manager'])->group(function () {
-        
-        // Example: Teammate 4 will put their routes here later!
-        // Route::resource('branch-requests', BranchRequestController::class);
+
+        // List requests (Filtered by role in the controller)
+        Route::get('/', [BranchRequestController::class, 'index'])->name('index');
+
+        // Submit a new branch request (Branch Managers)
+        Route::post('/', [BranchRequestController::class, 'store'])->name('store');
+
+        // Dispatch items (Warehouse Workers)
+        Route::patch('/{branchRequest}/dispatch', [BranchRequestController::class, 'dispatch'])->name('dispatch');
 
     });
 
@@ -71,7 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // Usually Auditors just need Read-Only access to reports
     Route::middleware(['role:admin,auditor'])->group(function () {
-        
+
         // Example: Teammate 5 will put report routes here later!
         // Route::get('reports/financials', [ReportController::class, 'financials']);
 

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model
 {
-    protected $Fillable=['name','location'];
+    protected $fillable=['name','location'];
 
      public function users() { return $this->hasMany(User::class); }
     public function branchRequests() { return $this->hasMany(BranchRequest::class); }

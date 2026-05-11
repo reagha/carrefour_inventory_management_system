@@ -4,11 +4,11 @@ use App\Http\Controllers\InboundLogistics\PurchaseOrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/dashboard');
 });
-
 // ==========================================
 // ALL LOGGED-IN USERS (Common Area)
 // ==========================================
@@ -38,6 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admins and Procurement Managers can access this zone
     Route::middleware(['role:admin,procurement'])->group(function () {
         
+        // Example: Teammate 2 will put their routes here later!
+       Route::resource('products', ProductController::class);
+        // Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::resource('purchase-orders', PurchaseOrderController::class)->except(['show']);
         Route::patch('purchase-orders/{purchase_order}/approve', [\App\Http\Controllers\PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
 

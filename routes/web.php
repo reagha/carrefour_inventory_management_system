@@ -3,11 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/dashboard');
 });
-
 // ==========================================
 // ALL LOGGED-IN USERS (Common Area)
 // ==========================================
@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:admin,procurement'])->group(function () {
         
         // Example: Teammate 2 will put their routes here later!
-        // Route::resource('suppliers', SupplierController::class);
+       Route::resource('products', ProductController::class);
         // Route::resource('purchase-orders', PurchaseOrderController::class);
 
     });

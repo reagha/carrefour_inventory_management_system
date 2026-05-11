@@ -42,7 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
        Route::resource('products', ProductController::class);
         // Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::resource('purchase-orders', PurchaseOrderController::class)->except(['show']);
-        Route::patch('purchase-orders/{purchase_order}/approve', [\App\Http\Controllers\PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+        Route::patch('purchase-orders/{purchase_order}/approve', [\App\Http\Controllers\InboundLogistics\PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
 
     });
 
@@ -52,8 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admins and Warehouse Workers can access this zone
     Route::middleware(['role:admin,warehouse'])->group(function () {
 
-        Route::get('purchase-orders/pending-receipts', [\App\Http\Controllers\PurchaseOrderController::class, 'pendingReceipts'])->name('purchase-orders.pending-receipts');
-        Route::patch('purchase-orders/{purchase_order}/receive', [\App\Http\Controllers\PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
+        Route::get('purchase-orders/pending-receipts', [\App\Http\Controllers\InboundLogistics\PurchaseOrderController::class, 'pendingReceipts'])->name('purchase-orders.pending-receipts');
+        Route::patch('purchase-orders/{purchase_order}/receive', [\App\Http\Controllers\InboundLogistics\PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
 
         // Example: Teammate 3 will put their routes here later!
         // Route::resource('products', ProductController::class);

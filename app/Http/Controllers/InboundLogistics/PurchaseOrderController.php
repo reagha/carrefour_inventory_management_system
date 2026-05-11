@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InboundLogistics;
 
+use App\Http\Controllers\Controller;
 use App\Mail\InboundLogistics\PurchaseOrderApproved;
 use App\Models\Product;
 use App\Models\PurchaseOrder;

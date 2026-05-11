@@ -29,9 +29,18 @@
 
     <!-- MODULE 2: PROCUREMENT ZONE (Teammate 2) -->
     @if(in_array(auth()->user()->role,['admin', 'procurement']))
-        <x-nav-link href="#" :active="false">
-            {{ __('Suppliers') }}
-        </x-nav-link>
+        
+        <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+        {{ __('Products') }}
+    </x-nav-link>
+
+    <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
+        {{ __('Suppliers') }}
+    </x-nav-link>
+
+    <x-nav-link :href="route('branches.index')" :active="request()->routeIs('branches.*')">
+        {{ __('Branches') }}
+    </x-nav-link>
         <x-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
             {{ __('Purchase Orders') }}
         </x-nav-link>

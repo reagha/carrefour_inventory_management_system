@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\BranchController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -40,6 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Example: Teammate 2 will put their routes here later!
        Route::resource('products', ProductController::class);
+          Route::resource('suppliers', SupplierController::class);
+         Route::resource('branches', BranchController::class);
         // Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::resource('purchase-orders', PurchaseOrderController::class)->except(['show']);
         Route::patch('purchase-orders/{purchase_order}/approve', [\App\Http\Controllers\InboundLogistics\PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');

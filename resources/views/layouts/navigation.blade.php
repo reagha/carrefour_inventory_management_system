@@ -29,20 +29,18 @@
 
     <!-- MODULE 2: PROCUREMENT ZONE (Teammate 2) -->
     @if(in_array(auth()->user()->role,['admin', 'procurement']))
-        <!-- Teammate 2 will change the href="#" later! -->
         <x-nav-link href="#" :active="false">
             {{ __('Suppliers') }}
         </x-nav-link>
-        <x-nav-link href="#" :active="false">
+        <x-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
             {{ __('Purchase Orders') }}
         </x-nav-link>
     @endif
 
     <!-- MODULE 3: WAREHOUSE ZONE (Teammate 3) -->
     @if(in_array(auth()->user()->role, ['admin', 'warehouse']))
-        <!-- Teammate 3 will change the href="#" later! -->
-        <x-nav-link href="#" :active="false">
-            {{ __('Products & Stock') }}
+        <x-nav-link :href="route('purchase-orders.pending-receipts')" :active="request()->routeIs('purchase-orders.pending-receipts')">
+            {{ __('Pending Receipts') }}
         </x-nav-link>
     @endif
 
@@ -129,15 +127,15 @@
         <x-responsive-nav-link href="#" :active="false">
             {{ __('Suppliers') }}
         </x-responsive-nav-link>
-        <x-responsive-nav-link href="#" :active="false">
+        <x-responsive-nav-link :href="route('purchase-orders.index')" :active="request()->routeIs('purchase-orders.*')">
             {{ __('Purchase Orders') }}
         </x-responsive-nav-link>
     @endif
 
     <!-- WAREHOUSE ZONE -->
     @if(in_array(auth()->user()->role, ['admin', 'warehouse']))
-        <x-responsive-nav-link href="#" :active="false">
-            {{ __('Products & Stock') }}
+        <x-responsive-nav-link :href="route('purchase-orders.pending-receipts')" :active="request()->routeIs('purchase-orders.pending-receipts')">
+            {{ __('Pending Receipts') }}
         </x-responsive-nav-link>
     @endif
 

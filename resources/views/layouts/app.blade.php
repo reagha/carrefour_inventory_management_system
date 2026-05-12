@@ -119,11 +119,11 @@
 
         @if(in_array(auth()->user()->role ?? '', ['admin','procurement']))
         <div class="nav-section">Procurement</div>
-        <a href="#" class="">
+        <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
             Suppliers
         </a>
-        <a href="#" class="">
+        <a href="{{ route('purchase-orders.index') }}" class="{{ request()->routeIs('purchase-orders.*') ? 'active' : '' }}">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
             Purchase Orders
         </a>
@@ -131,7 +131,7 @@
 
         @if(in_array(auth()->user()->role ?? '', ['admin','warehouse']))
         <div class="nav-section">Warehouse</div>
-        <a href="#" class="">
+        <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
             Products
         </a>
@@ -139,7 +139,7 @@
 
         @if(in_array(auth()->user()->role ?? '', ['admin','branch_manager']))
         <div class="nav-section">Branch</div>
-        <a href="#" class="">
+        <a href="{{ route('branch-requests.index') }}" class="{{ request()->routeIs('branch-requests.*') ? 'active' : '' }}">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
             Stock Requests
         </a>
@@ -172,4 +172,22 @@
 
     <div class="sidebar-footer">
         <div class="user-name">{{ auth()->user()->name ?? 'Guest' }}</div>
-        <div>{{ ucfirst(str_r
+        <div>{{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'guest')) }}</div>
+    </div>
+</aside>
+
+<div id="main-content">
+    <header id="topbar">
+        <div class="page-title">@yield('title', 'Dashboard')</div>
+        <div class="topbar-right">
+            <span class="role-badge role-{{ auth()->user()->role ?? 'admin' }}">{{ ucfirst(str_replace('_', ' ', auth()->user()->role ?? 'Admin')) }}</span>
+        </div>
+    </header>
+
+    <main id="page-body">
+        @yield('content')
+    </main>
+</div>
+
+</body>
+</html>

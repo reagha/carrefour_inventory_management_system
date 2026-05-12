@@ -20,17 +20,26 @@ class ReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate   = $request->input('end_date');
 
-        $products = Product::with('supplier')
-            ->orderByDesc(DB::raw('quantity_in_warehouse * unit_cost'))
+        $query = Product::with('supplier');
+
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        $products = $query->orderByDesc(DB::raw('quantity_in_warehouse * unit_cost'))
             ->get()
             ->map(function ($p) {
                 $p->total_value = $p->quantity_in_warehouse * $p->unit_cost;
                 return $p;
             });
 
-        $grandTotal     = $products->sum('total_value');
-        $lowStockCount  = $products->filter(fn($p) => $p->quantity_in_warehouse <= $p->reorder_level)->count();
-        $outOfStockCount= $products->filter(fn($p) => $p->quantity_in_warehouse == 0)->count();
+        $grandTotal      = $products->sum('total_value');
+        $lowStockCount   = $products->filter(fn($p) => $p->quantity_in_warehouse <= $p->reorder_level)->count();
+        $outOfStockCount = $products->filter(fn($p) => $p->quantity_in_warehouse == 0)->count();
 
         return view('reports.valuation', compact(
             'products', 'grandTotal', 'lowStockCount', 'outOfStockCount', 'startDate', 'endDate'
@@ -43,23 +52,14 @@ class ReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate   = $request->input('end_date');
 
-        $query = BranchRequest::with('branch')
-            ->where('status', 'approved')
-            ->selectRaw('branch_id, count(*) as total_requests, sum(id) as _placeholder')
-            ->groupBy('branch_id');
-
-        if ($startDate) $query->whereDate('created_at', '>=', $startDate);
-        if ($endDate)   $query->whereDate('created_at', '<=', $endDate);
-
-        // Top branches by number of approved requests
         $branchActivity = Branch::withCount([
-            'branchRequests as total_requests',
-            'branchRequests as approved_requests' => fn($q) => $q->where('status', 'approved'),
-            'branchRequests as pending_requests'  => fn($q) => $q->where('status', 'pending'),
+            'branchRequests as total_requests' => fn($q) => $this->applyRequestDateFilter($q, $startDate, $endDate),
+            'branchRequests as approved_requests' => fn($q) => $this->applyRequestDateFilter($q, $startDate, $endDate)->where('status', 'approved'),
+            'branchRequests as pending_requests'  => fn($q) => $this->applyRequestDateFilter($q, $startDate, $endDate)->where('status', 'pending'),
         ])->get()->sortByDesc('total_requests');
 
-        // Top requested products
         $topProducts = BranchRequestItem::with('product')
+            ->whereHas('branchRequest', fn($q) => $this->applyRequestDateFilter($q, $startDate, $endDate))
             ->select('product_id', DB::raw('sum(quantity) as total_qty'))
             ->groupBy('product_id')
             ->orderByDesc('total_qty')
@@ -78,10 +78,10 @@ class ReportController extends Controller
         $endDate   = $request->input('end_date',   now()->toDateString());
 
         $suppliers = Supplier::with(['purchaseOrders' => function ($q) use ($startDate, $endDate) {
-            $q->whereBetween('created_at', [$startDate, $endDate]);
+            $q->whereBetween('created_at', [$startDate, $endDate])->with('items');
         }])->get()->map(function ($supplier) {
             $supplier->total_committed = $supplier->purchaseOrders->sum(function ($po) {
-                return $po->purchaseOrderItems->sum(fn($i) => $i->quantity * $i->unit_price);
+                return $po->items->sum(fn($i) => $i->quantity * $i->unit_price);
             });
             $supplier->total_orders    = $supplier->purchaseOrders->count();
             $supplier->approved_orders = $supplier->purchaseOrders->where('status', 'approved')->count();
@@ -104,5 +104,18 @@ class ReportController extends Controller
         return view('reports.supplier-expenditure', compact(
             'suppliers', 'grandTotal', 'monthlyTrend', 'startDate', 'endDate'
         ));
+    }
+
+    private function applyRequestDateFilter($query, $startDate, $endDate)
+    {
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        return $query;
     }
 }

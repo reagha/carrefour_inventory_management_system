@@ -13,4 +13,5 @@ class PurchaseOrder extends Model
     public function procurementManager() { return $this->belongsTo(User::class, 'procurement_manager_id'); }
     public function receivedBy() { return $this->belongsTo(User::class, 'received_by'); }
     public function items() { return $this->hasMany(PurchaseOrderItem::class); }
+    public function purchaseOrderItems() { return $this->items(); }
 }

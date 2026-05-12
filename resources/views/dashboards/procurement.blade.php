@@ -38,8 +38,8 @@
                     <td><strong>#{{ $po->id }}</strong></td>
                     <td>{{ $po->supplier->name ?? '—' }}</td>
                     <td>{{ $po->created_at->format('d M Y') }}</td>
-                    <td>{{ $po->purchaseOrderItems->count() }}</td>
-                    <td>UGX {{ number_format($po->purchaseOrderItems->sum(fn($i) => $i->quantity * $i->unit_price)) }}</td>
+                    <td>{{ $po->items->count() }}</td>
+                    <td>UGX {{ number_format($po->items->sum(fn($i) => $i->quantity * $i->unit_price)) }}</td>
                     <td><span class="badge {{ match($po->status ?? '') { 'approved'=>'badge-green','pending'=>'badge-yellow','rejected'=>'badge-red','received'=>'badge-blue',default=>'badge-gray' } }}">{{ ucfirst($po->status ?? '') }}</span></td>
                 </tr>
                 @empty

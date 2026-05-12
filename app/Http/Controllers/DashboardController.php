@@ -27,10 +27,10 @@ class DashboardController extends Controller
 
     private function procurementDashboard()
     {
-        $pendingPOs        = PurchaseOrder::where('status', 'pending')->with('supplier', 'purchaseOrderItems')->latest()->get();
-        $totalPendingValue = $pendingPOs->sum(fn($po) => $po->purchaseOrderItems->sum(fn($i) => $i->quantity * $i->unit_price));
+        $pendingPOs        = PurchaseOrder::where('status', 'pending')->with('supplier', 'items')->latest()->get();
+        $totalPendingValue = $pendingPOs->sum(fn($po) => $po->items->sum(fn($i) => $i->quantity * $i->unit_price));
         $posByStatus       = PurchaseOrder::select('status', DB::raw('count(*) as count'))->groupBy('status')->pluck('count', 'status');
-        $recentPOs         = PurchaseOrder::with('supplier', 'purchaseOrderItems')->latest()->take(10)->get();
+        $recentPOs         = PurchaseOrder::with('supplier', 'items')->latest()->take(10)->get();
 
         return view('dashboards.procurement', compact('pendingPOs', 'totalPendingValue', 'posByStatus', 'recentPOs'));
     }

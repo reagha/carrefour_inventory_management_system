@@ -33,15 +33,15 @@ class DatabaseSeeder extends Seeder
         $admin = User::create(['name' => 'System Admin', 'email' => 'admin@warehouse.com', 'password' => $password, 'role' => 'admin']);
         $procurement = User::create(['name' => 'Sarah Procurement', 'email' => 'procurement@warehouse.com', 'password' => $password, 'role' => 'procurement']);
         $auditor = User::create(['name' => 'Jane Auditor', 'email' => 'auditor@warehouse.com', 'password' => $password, 'role' => 'auditor']);
-        
+
         // Warehouse Team
         $warehouse1 = User::create(['name' => 'Mike Warehouse', 'email' => 'warehouse1@warehouse.com', 'password' => $password, 'role' => 'warehouse']);
         $warehouse2 = User::create(['name' => 'David Loader', 'email' => 'warehouse2@warehouse.com', 'password' => $password, 'role' => 'warehouse']);
 
         // Branch Managers
-        $mgr_oasis = User::create(['name' => 'John Oasis', 'email' => 'oasis@warehouse.com', 'password' => $password, 'role' => 'branch_manager', 'branch_id' => $b_oasis->id]);
-        $mgr_lugogo = User::create(['name' => 'Mary Lugogo', 'email' => 'lugogo@warehouse.com', 'password' => $password, 'role' => 'branch_manager', 'branch_id' => $b_lugogo->id]);
-        $mgr_acacia = User::create(['name' => 'Peter Acacia', 'email' => 'acacia@warehouse.com', 'password' => $password, 'role' => 'branch_manager', 'branch_id' => $b_acacia->id]);
+        $mgr_oasis = User::create(['name' => 'John Oasis', 'email' => 'oasis@warehouse.com', 'password' => $password, 'role' => 'branchManager', 'branch_id' => $b_oasis->id]);
+        $mgr_lugogo = User::create(['name' => 'Mary Lugogo', 'email' => 'lugogo@warehouse.com', 'password' => $password, 'role' => 'branchManager', 'branch_id' => $b_lugogo->id]);
+        $mgr_acacia = User::create(['name' => 'Peter Acacia', 'email' => 'acacia@warehouse.com', 'password' => $password, 'role' => 'branchManager', 'branch_id' => $b_acacia->id]);
 
         // ==========================================
         // 3. SEED SUPPLIERS
@@ -57,16 +57,16 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         $p_sugar1kg = Product::create(['sku' => 'KAK-SUG-1KG', 'name' => 'Kakira Sugar 1kg', 'supplier_id' => $sup_kakira->id, 'unit_cost' => 3500, 'quantity_in_warehouse' => 1200, 'reorder_level' => 200]);
         $p_sugar50kg = Product::create(['sku' => 'KAK-SUG-50KG', 'name' => 'Kakira Sugar 50kg Sack', 'supplier_id' => $sup_kakira->id, 'unit_cost' => 150000, 'quantity_in_warehouse' => 45, 'reorder_level' => 10]);
-        
+
         $p_coke = Product::create(['sku' => 'COKE-500ML', 'name' => 'Coca-Cola 500ml', 'supplier_id' => $sup_coke->id, 'unit_cost' => 1200, 'quantity_in_warehouse' => 800, 'reorder_level' => 100]);
         $p_water = Product::create(['sku' => 'RWEN-500ML', 'name' => 'Rwenzori Water 500ml', 'supplier_id' => $sup_coke->id, 'unit_cost' => 800, 'quantity_in_warehouse' => 2000, 'reorder_level' => 500]);
-        
+
         $p_oil = Product::create(['sku' => 'MUK-OIL-1L', 'name' => 'Mukwano Cooking Oil 1L', 'supplier_id' => $sup_mukwano->id, 'unit_cost' => 6500, 'quantity_in_warehouse' => 350, 'reorder_level' => 50]);
         $p_soap = Product::create(['sku' => 'MUK-SOAP-1KG', 'name' => 'White Star Soap 1kg', 'supplier_id' => $sup_mukwano->id, 'unit_cost' => 4000, 'quantity_in_warehouse' => 600, 'reorder_level' => 100]);
-        
+
         $p_milk = Product::create(['sku' => 'JES-MILK-1L', 'name' => 'Jesa Fresh Milk 1L', 'supplier_id' => $sup_jesa->id, 'unit_cost' => 2800, 'quantity_in_warehouse' => 150, 'reorder_level' => 50]); // Low stock!
         $p_yoghurt = Product::create(['sku' => 'JES-YOG-500ML', 'name' => 'Jesa Yoghurt Vanilla 500ml', 'supplier_id' => $sup_jesa->id, 'unit_cost' => 3000, 'quantity_in_warehouse' => 80, 'reorder_level' => 30]);
-        
+
         $p_nile = Product::create(['sku' => 'NIL-SPEC-500ML', 'name' => 'Nile Special 500ml', 'supplier_id' => $sup_nile->id, 'unit_cost' => 2500, 'quantity_in_warehouse' => 1000, 'reorder_level' => 200]);
         $p_club = Product::create(['sku' => 'CLUB-PILS-500ML', 'name' => 'Club Pilsener 500ml', 'supplier_id' => $sup_nile->id, 'unit_cost' => 2500, 'quantity_in_warehouse' => 900, 'reorder_level' => 200]);
 

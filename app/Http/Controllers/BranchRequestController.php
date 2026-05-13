@@ -65,7 +65,7 @@ class BranchRequestController extends Controller
 
                 $requestRecord = BranchRequest::create([
                     'branch_id' => $user->branch_id,
-                    'branchManager_id' => $user->id,
+                    'branch_manager_id' => $user->id,
                     'status' => 'pending',
                 ]);
 

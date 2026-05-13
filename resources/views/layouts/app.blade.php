@@ -420,6 +420,10 @@
                class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
                 Products
             </a>
+            <a href="{{ route('branch-requests.index') }}"
+               class="{{ request()->routeIs('branch-requests.*') ? 'active' : '' }}">
+                Stock Requests
+            </a>
         </div>
         @endif
 

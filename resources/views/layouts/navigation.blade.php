@@ -54,7 +54,7 @@
     @endif
 
     <!-- MODULE 4: BRANCH MANAGER ZONE (Teammate 4) -->
-    @if(in_array(auth()->user()->role, ['admin', 'branch_manager']))
+    @if(in_array(auth()->user()->role, ['admin', 'branchManager']))
         <!-- Teammate 4 will change the href="#" later! -->
         <x-nav-link href="#" :active="false">
             {{ __('Branch Requests') }}
@@ -149,7 +149,7 @@
     @endif
 
     <!-- BRANCH MANAGER ZONE -->
-    @if(in_array(auth()->user()->role, ['admin', 'branch_manager']))
+    @if(in_array(auth()->user()->role, ['admin', 'branchManager']))
         <x-responsive-nav-link href="#" :active="false">
             {{ __('Branch Requests') }}
         </x-responsive-nav-link>

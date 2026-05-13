@@ -1,52 +1,54 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Pending Receipts') }}</h2>
-    </x-slot>
+@extends('layouts.app')
+@section('title', 'Pending Receipts')
+@section('content')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-4 rounded-lg bg-green-50 border border-green-200 p-4 text-green-800">{{ session('success') }}</div>
-            @endif
+<h2 style="font-size:1.5rem;font-weight:700;color:#111827;margin-bottom:28px;">Approved Orders Awaiting Receipt</h2>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PO #</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested By</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($purchaseOrders as $purchaseOrder)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $purchaseOrder->id }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $purchaseOrder->supplier->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">UGX {{ number_format($purchaseOrder->total_amount) }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $purchaseOrder->procurementManager->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <form action="{{ route('purchase-orders.receive', $purchaseOrder) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="px-3 py-1 bg-slate-700 text-white rounded-md hover:bg-slate-800">{{ __('Receive Stock') }}</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ __('No approved purchase orders are currently waiting for receipt.') }}</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+@if(session('success'))
+<div style="background:#DCFCE7;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px;color:#15803D;margin-bottom:20px;font-weight:500;">
+    ✓ {{ session('success') }}
+</div>
+@endif
+
+@if($purchaseOrders->count())
+<div class="section-card">
+    <div style="overflow-x:auto;">
+        <table class="ims-table">
+            <thead>
+                <tr>
+                    <th>PO #</th>
+                    <th>Supplier</th>
+                    <th>Total Amount</th>
+                    <th>Approved By</th>
+                    <th>Items</th>
+                    <th style="text-align:center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($purchaseOrders as $po)
+                <tr>
+                    <td style="font-family:monospace;color:#6B7280;font-weight:600;">PO-{{ str_pad($po->id, 5, '0', STR_PAD_LEFT) }}</td>
+                    <td><strong>{{ $po->supplier->name }}</strong></td>
+                    <td style="font-weight:700;color:#111827;">UGX {{ number_format($po->total_amount) }}</td>
+                    <td>{{ $po->procurementManager->name }}</td>
+                    <td style="font-size:.875rem;color:#6B7280;">{{ $po->items->count() }} item{{ $po->items->count() !== 1 ? 's' : '' }}</td>
+                    <td style="text-align:center;">
+                        <form action="{{ route('purchase-orders.receive', $po) }}" method="POST" style="display:inline;" onsubmit="return confirm('Confirm receipt of this purchase order?');">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" style="color:#059669;background:none;border:none;cursor:pointer;font-weight:600;text-decoration:none;padding:8px 12px;">Receive Stock</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-</x-app-layout>
+</div>
+@else
+<div style="background:#F3F4F6;border:1px solid #E5E7EB;border-radius:8px;padding:32px;text-align:center;color:#6B7280;">
+    <p style="font-size:1rem;margin:0;">No approved purchase orders are currently waiting for receipt.</p>
+</div>
+@endif
+
+@endsection

@@ -12,7 +12,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BranchRequestController;
 
 Route::get('/', function () {
-    return redirect('/dashboard');
+    return view('welcome');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -40,13 +40,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('branch-requests/{branch_request}/dispatch', [BranchRequestController::class, 'dispatch'])->name('branch-requests.dispatch');
     });
 
-    Route::middleware(['role:admin,branch_manager'])->group(function () {
+    Route::middleware(['role:admin,branchManager'])->group(function () {
         Route::get('branch-requests', [BranchRequestController::class, 'index'])->name('branch-requests.index');
-        Route::get('branch-requests/create', fn () => view('branch-requests.create'))->name('branch-requests.create');
+        Route::get('branch-requests/create', [BranchRequestController::class, 'create'])->name('branch-requests.create');
         Route::post('branch-requests', [BranchRequestController::class, 'store'])->name('branch-requests.store');
     });
 
-    Route::middleware(['role:admin,auditor,procurement,warehouse,branch_manager'])->group(function () {
+    Route::middleware(['role:admin,auditor,procurement,warehouse,branchManager'])->group(function () {
         Route::get('reports/valuation', [ReportController::class, 'valuation'])->name('reports.valuation');
         Route::get('reports/consumption', [ReportController::class, 'consumption'])->name('reports.consumption');
         Route::get('reports/supplier-expenditure', [ReportController::class, 'supplierExpenditure'])->name('reports.supplier-expenditure');

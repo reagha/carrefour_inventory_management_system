@@ -32,9 +32,9 @@ class UserController extends Controller
             'name'      => 'required|string|max:255',
             'email'     => 'required|string|email|max:255|unique:users',
             'password'  => 'required|string|min:8|confirmed',
-            'role'      => ['required', Rule::in(['admin', 'procurement', 'warehouse', 'branch_manager', 'auditor'])],
-            // Branch is only required if the role is 'branch_manager'
-            'branch_id' =>['nullable', 'exists:branches,id', Rule::requiredIf($request->role === 'branch_manager')],
+            'role'      => ['required', Rule::in(['admin', 'procurement', 'warehouse', 'branchManager', 'auditor'])],
+            // Branch is only required if the role is 'branchManager'
+            'branch_id' =>['nullable', 'exists:branches,id', Rule::requiredIf($request->role === 'branchManager')],
         ]);
 
         User::create([
@@ -42,7 +42,7 @@ class UserController extends Controller
             'email'     => $request->email,
             'password'  => Hash::make($request->password), // Secure hashing
             'role'      => $request->role,
-            'branch_id' => $request->role === 'branch_manager' ? $request->branch_id : null,
+            'branch_id' => $request->role === 'branchManager' ? $request->branch_id : null,
         ]);
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
@@ -63,8 +63,8 @@ class UserController extends Controller
             // Ignore the current user's email so it doesn't throw a "unique" error on themselves
             'email'     => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password'  => 'nullable|string|min:8|confirmed', // Password is now optional!
-            'role'      =>['required', \Illuminate\Validation\Rule::in(['admin', 'procurement', 'warehouse', 'branch_manager', 'auditor'])],
-            'branch_id' =>['nullable', 'exists:branches,id', \Illuminate\Validation\Rule::requiredIf($request->role === 'branch_manager')],
+            'role'      =>['required', \Illuminate\Validation\Rule::in(['admin', 'procurement', 'warehouse', 'branchManager', 'auditor'])],
+            'branch_id' =>['nullable', 'exists:branches,id', \Illuminate\Validation\Rule::requiredIf($request->role === 'branchManager')],
         ]);
 
         // Prepare data
@@ -72,7 +72,7 @@ class UserController extends Controller
             'name'      => $request->name,
             'email'     => $request->email,
             'role'      => $request->role,
-            'branch_id' => $request->role === 'branch_manager' ? $request->branch_id : null,
+            'branch_id' => $request->role === 'branchManager' ? $request->branch_id : null,
         ];
 
         // Only hash and update the password if the admin actually typed a new one

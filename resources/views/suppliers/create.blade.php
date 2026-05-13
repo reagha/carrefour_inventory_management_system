@@ -1,34 +1,38 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Register New Supplier</h2>
-    </x-slot>
+@extends('layouts.app')
+@section('title', 'Add Supplier')
+@section('content')
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <form action="{{ route('suppliers.store') }}" method="POST">
-                    @csrf
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Supplier Company Name</label>
-                            <input type="text" name="name" value="{{ old('name') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                            @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Contact Email</label>
-                            <input type="email" name="contact_email" value="{{ old('contact_email') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Contact Phone (e.g. 0414...)</label>
-                            <input type="text" name="contact_phone" value="{{ old('contact_phone') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex items-center justify-end">
-                        <a href="{{ route('suppliers.index') }}" class="text-gray-600 mr-4">Cancel</a>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded font-bold">Save Supplier</button>
-                    </div>
-                </form>
+<div style="max-width:600px;">
+    <h2 style="font-size:1.5rem;font-weight:700;color:#111827;margin-bottom:28px;">Register New Supplier</h2>
+    
+    <div class="section-card">
+        <form action="{{ route('suppliers.store') }}" method="POST" style="padding:24px;">
+            @csrf
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block;font-size:.875rem;font-weight:600;color:#374151;margin-bottom:8px;">Supplier Company Name</label>
+                <input type="text" name="name" value="{{ old('name') }}" placeholder="e.g., Global Traders Ltd" style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:.9rem;" required>
+                @error('name') <p style="color:#DC2626;font-size:.8rem;margin-top:4px;">{{ $message }}</p> @enderror
             </div>
-        </div>
+            
+            <div style="margin-bottom:20px;">
+                <label style="display:block;font-size:.875rem;font-weight:600;color:#374151;margin-bottom:8px;">Contact Email</label>
+                <input type="email" name="contact_email" value="{{ old('contact_email') }}" placeholder="supplier@example.com" style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:.9rem;" required>
+                @error('contact_email') <p style="color:#DC2626;font-size:.8rem;margin-top:4px;">{{ $message }}</p> @enderror
+            </div>
+            
+            <div style="margin-bottom:24px;">
+                <label style="display:block;font-size:.875rem;font-weight:600;color:#374151;margin-bottom:8px;">Contact Phone</label>
+                <input type="text" name="contact_phone" value="{{ old('contact_phone') }}" placeholder="e.g., +256 414 123456" style="width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:.9rem;" required>
+                @error('contact_phone') <p style="color:#DC2626;font-size:.8rem;margin-top:4px;">{{ $message }}</p> @enderror
+            </div>
+            
+            <div style="display:flex;gap:12px;justify-content:flex-end;">
+                <a href="{{ route('suppliers.index') }}" style="padding:10px 20px;border:1px solid #D1D5DB;border-radius:8px;color:#374151;text-decoration:none;font-weight:600;transition:all .3s;">Cancel</a>
+                <button type="submit" style="padding:10px 24px;background:#004B9B;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;transition:all .3s;">Save Supplier</button>
+            </div>
+        </form>
     </div>
-</x-app-layout>
+</div>
+
+@endsection

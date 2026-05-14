@@ -17,18 +17,18 @@ class BranchRequestTest extends TestCase
     /**
      * @test
      */
-    public function a_branch_manager_can_only_view_their_own_requests()
+    public function a_branchManager_can_only_view_their_own_requests()
     {
         // 1. Arrange
         $branchA = Branch::factory()->create();
         $branchB = Branch::factory()->create();
 
-        $managerA = User::factory()->create(['role' => 'branch_manager', 'branch_id' => $branchA->id]);
-        $managerB = User::factory()->create(['role' => 'branch_manager', 'branch_id' => $branchB->id]);
+        $managerA = User::factory()->create(['role' => 'branchManager', 'branch_id' => $branchA->id]);
+        $managerB = User::factory()->create(['role' => 'branchManager', 'branch_id' => $branchB->id]);
 
         // Creating dummy requests
-        BranchRequest::factory()->count(3)->create(['branch_id' => $branchA->id, 'branch_manager_id' => $managerA->id]);
-        BranchRequest::factory()->count(2)->create(['branch_id' => $branchB->id, 'branch_manager_id' => $managerB->id]);
+        BranchRequest::factory()->count(3)->create(['branch_id' => $branchA->id, 'branchManager_id' => $managerA->id]);
+        BranchRequest::factory()->count(2)->create(['branch_id' => $branchB->id, 'branchManager_id' => $managerB->id]);
 
         // 2. Act: Log in as Manager A and fetch requests
         $response = $this->actingAs($managerA)->getJson(route('branch-requests.index'));
@@ -43,10 +43,10 @@ class BranchRequestTest extends TestCase
     /**
      * @test
      */
-    public function a_branch_manager_can_create_a_request_when_stock_is_sufficient()
+    public function a_branchManager_can_create_a_request_when_stock_is_sufficient()
     {
         $branch = Branch::factory()->create();
-        $manager = User::factory()->create(['role' => 'branch_manager', 'branch_id' => $branch->id]);
+        $manager = User::factory()->create(['role' => 'branchManager', 'branch_id' => $branch->id]);
         $product = Product::factory()->create(['quantity_in_warehouse' => 100]);
 
         $payload = [
@@ -62,7 +62,7 @@ class BranchRequestTest extends TestCase
         // Verify database state: the request and item were saved correctly
         $this->assertDatabaseHas('branch_requests', [
             'branch_id' => $branch->id,
-            'branch_manager_id' => $manager->id,
+            'branchManager_id' => $manager->id,
             'status' => 'pending',
         ]);
 
@@ -81,7 +81,7 @@ class BranchRequestTest extends TestCase
     public function it_blocks_creating_a_request_if_requested_quantity_exceeds_warehouse_stock()
     {
         $branch = Branch::factory()->create();
-        $manager = User::factory()->create(['role' => 'branch_manager', 'branch_id' => $branch->id]);
+        $manager = User::factory()->create(['role' => 'branchManager', 'branch_id' => $branch->id]);
 
         // Product only has 10 items
         $product = Product::factory()->create(['quantity_in_warehouse' => 10]);
@@ -111,7 +111,7 @@ class BranchRequestTest extends TestCase
     public function a_warehouse_worker_can_dispatch_a_request_and_stock_is_deducted()
     {
         $branch = Branch::factory()->create();
-        $manager = User::factory()->create(['role' => 'branch_manager', 'branch_id' => $branch->id]);
+        $manager = User::factory()->create(['role' => 'branchManager', 'branch_id' => $branch->id]);
         $worker = User::factory()->create(['role' => 'warehouse_worker']);
 
         // Start with 100 items
@@ -119,7 +119,7 @@ class BranchRequestTest extends TestCase
 
         $request = BranchRequest::create([
             'branch_id' => $branch->id,
-            'branch_manager_id' => $manager->id,
+            'branchManager_id' => $manager->id,
             'status' => 'pending',
         ]);
 
@@ -148,10 +148,10 @@ class BranchRequestTest extends TestCase
     /**
      * @test
      */
-    public function a_branch_manager_cannot_dispatch_a_request()
+    public function a_branchManager_cannot_dispatch_a_request()
     {
         $branch = Branch::factory()->create();
-        $manager = User::factory()->create(['role' => 'branch_manager', 'branch_id' => $branch->id]);
+        $manager = User::factory()->create(['role' => 'branchManager', 'branch_id' => $branch->id]);
 
         $request = BranchRequest::factory()->create(['status' => 'pending']);
 

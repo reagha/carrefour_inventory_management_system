@@ -39,6 +39,6 @@ public function purchaseOrders(): HasMany {
     return $this->hasMany(PurchaseOrder::class, 'procurement_manager_id');
 }
 public function branchRequests(): HasMany {
-    return $this->hasMany(BranchRequest::class, 'branch_manager_id');
+    return $this->hasMany(BranchRequest::class, 'branchManager_id');
 }
 }

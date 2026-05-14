@@ -17,18 +17,27 @@ class BranchRequestController extends Controller
     {
         $user = $request->user();
 
-        $query = BranchRequest::with(['branch', 'manager', 'items.product']);
+        $query = BranchRequest::with(['branch', 'branchManager', 'items.product']);
 
         // Check the role of the authenticated user to scope the requests
-        if ($user->role === 'branch_manager') {
+        if ($user->role === 'branchManager') {
             $query->where('branch_id', $user->branch_id);
         }
-        // If 'warehouse_worker' or 'admin', they see all (we skip the where clause).
+        // If 'warehouse' or 'admin', they see all (we skip the where clause).
 
         // Paginate for easier frontend handling
         $branchRequests = $query->latest()->paginate(15);
 
-        return response()->json($branchRequests); // assuming API/JSON response
+        return view('branch-requests.index', compact('branchRequests'));
+    }
+
+    /**
+     * Show create form with available products.
+     */
+    public function create()
+    {
+        $products = Product::orderBy('name')->get();
+        return view('branch-requests.create', compact('products'));
     }
 
     /**
@@ -39,8 +48,8 @@ class BranchRequestController extends Controller
         $user = $request->user();
 
         // Security / Authorization check
-        if ($user->role !== 'branch_manager' || !$user->branch_id) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+        if ($user->role !== 'branchManager' || !$user->branch_id) {
+            abort(403, 'Unauthorized.');
         }
 
         // Validate payload structure
@@ -79,15 +88,13 @@ class BranchRequestController extends Controller
                 return $requestRecord;
             });
 
-            return response()->json([
-                'message' => 'Branch request created successfully.',
-                'data' => $branchRequest->load('items.product'),
-            ], 201);
+            return redirect()->route('branch-requests.index')
+                ->with('success', 'Stock request created successfully.');
 
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to create request: ' . $e->getMessage()], 500);
+            return back()->with('error', 'Failed to create request: ' . $e->getMessage());
         }
     }
 
@@ -99,13 +106,13 @@ class BranchRequestController extends Controller
         $user = $request->user();
 
         // Authorization check
-        if ($user->role !== 'warehouse_worker') {
-            return response()->json(['message' => 'Unauthorized action.'], 403);
+        if ($user->role !== 'warehouse' && $user->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
         }
 
         // State machine constraint check
         if ($branchRequest->status !== 'pending') {
-            return response()->json(['message' => 'Only pending requests can be dispatched.'], 400);
+            return back()->with('error', 'Only pending requests can be dispatched.');
         }
 
         try {
@@ -141,10 +148,10 @@ class BranchRequestController extends Controller
                 ]);
             });
 
-            return response()->json(['message' => 'Request dispatched and Central Warehouse stock updated!']);
+            return back()->with('success', 'Stock request dispatched and warehouse inventory updated!');
 
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Dispatch failed: ' . $e->getMessage()], 422);
+            return back()->with('error', 'Dispatch failed: ' . $e->getMessage());
         }
     }
 }

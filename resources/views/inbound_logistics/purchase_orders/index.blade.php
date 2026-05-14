@@ -1,61 +1,70 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Purchase Orders') }}</h2>
-            <a href="{{ route('purchase-orders.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                {{ __('Create PO') }}
-            </a>
-        </div>
-    </x-slot>
+@extends('layouts.app')
+@section('title', 'Purchase Orders')
+@section('content')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-4 rounded-lg bg-green-50 border border-green-200 p-4 text-green-800">{{ session('success') }}</div>
-            @endif
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+    <h2 style="font-size:1.5rem;font-weight:700;color:#111827;margin:0;">Purchase Orders</h2>
+    <a href="{{ route('purchase-orders.create') }}" style="background:#004B9B;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all .3s;">
+        <span>+</span> Create Purchase Order
+    </a>
+</div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PO #</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($purchaseOrders as $purchaseOrder)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $purchaseOrder->id }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $purchaseOrder->supplier->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">UGX {{ number_format($purchaseOrder->total_amount) }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($purchaseOrder->status) }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $purchaseOrder->procurementManager->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-x-2">
-                                            @if($purchaseOrder->status === 'pending')
-                                                <form action="{{ route('purchase-orders.approve', $purchaseOrder) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="px-3 py-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-700">{{ __('Approve') }}</button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ __('No purchase orders found.') }}</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+@if(session('success'))
+<div style="background:#DCFCE7;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px;color:#15803D;margin-bottom:20px;font-weight:500;">
+    ✓ {{ session('success') }}
+</div>
+@endif
+
+@if($purchaseOrders->count())
+<div class="section-card">
+    <div style="overflow-x:auto;">
+        <table class="ims-table">
+            <thead>
+                <tr>
+                    <th>PO #</th>
+                    <th>Supplier</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th style="text-align:center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($purchaseOrders as $po)
+                <tr>
+                    <td style="font-family:monospace;color:#6B7280;font-weight:600;">PO-{{ str_pad($po->id, 5, '0', STR_PAD_LEFT) }}</td>
+                    <td><strong>{{ $po->supplier->name }}</strong></td>
+                    <td style="font-weight:700;color:#111827;">UGX {{ number_format($po->total_amount) }}</td>
+                    <td>
+                        @if($po->status === 'pending')
+                            <span class="badge badge-yellow">Pending</span>
+                        @elseif($po->status === 'approved')
+                            <span class="badge badge-blue">Approved</span>
+                        @else
+                            <span class="badge badge-green">Received</span>
+                        @endif
+                    </td>
+                    <td>{{ $po->procurementManager->name }}</td>
+                    <td style="text-align:center;font-size:.9rem;">
+                        @if($po->status === 'pending')
+                            <form action="{{ route('purchase-orders.approve', $po) }}" method="POST" style="display:inline;" onsubmit="return confirm('Approve this purchase order?');">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" style="color:#059669;background:none;border:none;cursor:pointer;font-weight:600;text-decoration:none;">Approve</button>
+                            </form>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-</x-app-layout>
+</div>
+@else
+<div style="background:#F3F4F6;border:1px solid #E5E7EB;border-radius:8px;padding:32px;text-align:center;color:#6B7280;">
+    <p style="font-size:1rem;margin-bottom:16px;">No purchase orders found.</p>
+    <a href="{{ route('purchase-orders.create') }}" style="background:#004B9B;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Create First Purchase Order</a>
+</div>
+@endif
+
+@endsection

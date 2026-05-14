@@ -1,95 +1,79 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Central Warehouse Inventory') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
+@section('title', 'Products')
+@section('content')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            <!-- Success/Error Messages -->
-            @if(session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-                    {{ session('success') }}
-                </div>
-            @endif
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+    <h2 style="font-size:1.5rem;font-weight:700;color:#111827;margin:0;">Central Warehouse Inventory</h2>
+    <a href="{{ route('products.create') }}" style="background:#004B9B;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all .3s;">
+        <span>+</span> Add Product
+    </a>
+</div>
 
-            @if(session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                    {{ session('error') }}
-                </div>
-            @endif
+@if(session('success'))
+<div style="background:#DCFCE7;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px;color:#15803D;margin-bottom:20px;font-weight:500;">
+    ✓ {{ session('success') }}
+</div>
+@endif
 
-            <!-- Header Actions -->
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-medium text-gray-900">Manage Products</h3>
-                <a href="{{ route('products.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    + Add New Product
-                </a>
-            </div>
+@if(session('error'))
+<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:8px;padding:12px 16px;color:#B91C1C;margin-bottom:20px;font-weight:500;">
+    ✕ {{ session('error') }}
+</div>
+@endif
 
-            <!-- Products Table -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Cost</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($products as $product)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">{{ $product->sku }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{{ $product->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->supplier->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">UGX {{ number_format($product->unit_cost) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span class="{{ $product->quantity_in_warehouse <= $product->reorder_level ? 'text-red-600 font-bold' : 'text-gray-900' }}">
-                                            {{ $product->quantity_in_warehouse }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($product->quantity_in_warehouse <= $product->reorder_level)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Low Stock</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">In Stock</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex space-x-3">
-                                            <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                            
-                                            <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Delete this product?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="px-6 py-4 text-center text-gray-500">No products found in the warehouse.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Pagination Links -->
-            <div class="mt-4">
-                {{ $products->links() }}
-            </div>
-
-        </div>
+@if($products->count())
+<div class="section-card">
+    <div style="overflow-x:auto;">
+        <table class="ims-table">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Product Name</th>
+                    <th>Supplier</th>
+                    <th>Unit Cost</th>
+                    <th>In Warehouse</th>
+                    <th>Reorder Level</th>
+                    <th>Status</th>
+                    <th style="text-align:center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($products as $product)
+                <tr>
+                    <td style="font-family:monospace;color:#6B7280;">{{ $product->sku }}</td>
+                    <td><strong>{{ $product->name }}</strong></td>
+                    <td>{{ $product->supplier->name ?? '—' }}</td>
+                    <td>UGX {{ number_format($product->unit_cost) }}</td>
+                    <td @style="{ fontWeight: $product->quantity_in_warehouse <= $product->reorder_level ? '700' : '400', color: $product->quantity_in_warehouse <= $product->reorder_level ? '#B91C1C' : '#111827' }">{{ number_format($product->quantity_in_warehouse) }}</td>
+                    <td>{{ number_format($product->reorder_level) }}</td>
+                    <td>
+                        @if($product->quantity_in_warehouse == 0)
+                            <span class="badge badge-red">Out of Stock</span>
+                        @elseif($product->quantity_in_warehouse <= $product->reorder_level)
+                            <span class="badge badge-yellow">Low Stock</span>
+                        @else
+                            <span class="badge badge-green">In Stock</span>
+                        @endif
+                    </td>
+                    <td style="text-align:center;font-size:.9rem;">
+                        <a href="{{ route('products.edit', $product) }}" style="color:#004B9B;text-decoration:none;font-weight:600;margin-right:12px;">Edit</a>
+                        <form action="{{ route('products.destroy', $product) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="color:#E30613;background:none;border:none;cursor:pointer;font-weight:600;text-decoration:none;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-</x-app-layout>
+</div>
+@else
+<div style="background:#F3F4F6;border:1px solid #E5E7EB;border-radius:8px;padding:32px;text-align:center;color:#6B7280;">
+    <p style="font-size:1rem;margin-bottom:16px;">No products found in the warehouse.</p>
+    <a href="{{ route('products.create') }}" style="background:#004B9B;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Add First Product</a>
+</div>
+@endif
+
+@endsection

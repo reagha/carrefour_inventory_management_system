@@ -12,7 +12,7 @@ class BranchRequestFactory extends Factory
     {
         return [
             'branch_id' => Branch::factory(),
-            'branch_manager_id' => User::factory(),
+            'branchManager_id' => User::factory(),
             'status' => 'pending',
             'dispatched_by' => null,
             'dispatched_at' => null,

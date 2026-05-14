@@ -5,6 +5,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BranchRequestController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -23,10 +26,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // ==========================================
-    // MODULE 1: ADMIN ZONE (You)
-    // ==========================================
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class);
     });
@@ -36,13 +35,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // Admins and Procurement Managers can access this zone
     Route::middleware(['role:admin,procurement'])->group(function () {
-
-        // Example: Teammate 2 will put their routes here later!
-        Route::resource('products', ProductController::class);
-        // Route::resource('purchase-orders', PurchaseOrderController::class);
+         Route::resource('products', ProductController::class);
+        Route::resource('suppliers', SupplierController::class);
         Route::resource('purchase-orders', PurchaseOrderController::class)->except(['show']);
         Route::patch('purchase-orders/{purchase_order}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
 
+        Route::patch('purchase-orders/{purchase_order}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
     });
 
     // ==========================================
@@ -75,6 +73,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Dispatch items (Warehouse Workers)
         Route::patch('/{branchRequest}/dispatch', [BranchRequestController::class, 'dispatch'])->name('dispatch');
 
+        Route::get('purchase-orders/pending-receipts', [PurchaseOrderController::class, 'pendingReceipts'])->name('purchase-orders.pending-receipts');
+        Route::patch('purchase-orders/{purchase_order}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
+        Route::patch('branch-requests/{branch_request}/dispatch', [BranchRequestController::class, 'dispatch'])->name('branch-requests.dispatch');
+    });
+
+    Route::middleware(['role:admin,branchManager'])->group(function () {
+        Route::get('branch-requests/create', [BranchRequestController::class, 'create'])->name('branch-requests.create');
+        Route::post('branch-requests', [BranchRequestController::class, 'store'])->name('branch-requests.store');
+    });
+
+    Route::middleware(['role:admin,warehouse,branchManager'])->group(function () {
+        Route::get('branch-requests', [BranchRequestController::class, 'index'])->name('branch-requests.index');
     });
 
     // ==========================================

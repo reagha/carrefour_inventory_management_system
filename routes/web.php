@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\InboundLogistics\PurchaseOrderController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -24,7 +24,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
     // ==========================================
     // MODULE 1: ADMIN ZONE (You)
     // ==========================================
@@ -39,10 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:admin,procurement'])->group(function () {
 
         // Example: Teammate 2 will put their routes here later!
-       Route::resource('products', ProductController::class);
+        Route::resource('products', ProductController::class);
         // Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::resource('purchase-orders', PurchaseOrderController::class)->except(['show']);
-        Route::patch('purchase-orders/{purchase_order}/approve', [\App\Http\Controllers\PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+        Route::patch('purchase-orders/{purchase_order}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
 
     });
 
@@ -52,8 +51,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admins and Warehouse Workers can access this zone
     Route::middleware(['role:admin,warehouse'])->group(function () {
 
-        Route::get('purchase-orders/pending-receipts', [\App\Http\Controllers\PurchaseOrderController::class, 'pendingReceipts'])->name('purchase-orders.pending-receipts');
-        Route::patch('purchase-orders/{purchase_order}/receive', [\App\Http\Controllers\PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
+        Route::get('purchase-orders/pending-receipts', [PurchaseOrderController::class, 'pendingReceipts'])->name('purchase-orders.pending-receipts');
+        Route::patch('purchase-orders/{purchase_order}/receive', [PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive');
 
         // Example: Teammate 3 will put their routes here later!
         // Route::resource('products', ProductController::class);

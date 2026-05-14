@@ -73,7 +73,7 @@
         <div class="grid gap-4 sm:grid-cols-3 items-end item-row">
             <div>
                 <label class="block text-sm font-medium text-gray-700">{{ __('Product') }}</label>
-                <select name="product_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <select name="items[0][product_id]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">{{ __('Select product') }}</option>
                     @foreach($products as $product)
                         <option value="{{ $product->id }}">{{ $product->sku }} – {{ $product->name }}</option>
@@ -83,7 +83,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700">{{ __('Quantity') }}</label>
-                <input type="number" name="quantity" min="1" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                <input type="number" name="items[0][quantity]" min="1" value="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
             </div>
 
             <div class="flex items-center space-x-2">

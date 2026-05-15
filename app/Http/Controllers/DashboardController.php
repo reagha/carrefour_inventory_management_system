@@ -101,10 +101,14 @@ class DashboardController extends Controller
      */
     private function warehouseDashboard()
     {
-        $trucksToReceive = PurchaseOrder::where(
-            'status',
-            'approved'
-        )->count();
+        $approvedReceipts = PurchaseOrder::where('status', 'approved')->count();
+
+        $overdueCanceledOrders = PurchaseOrder::where(
+                'status',
+                'canceled'
+            )
+            ->whereDate('due_date', '<', now()->toDateString())
+            ->count();
 
         $trucksToDispatch = BranchRequest::where(
             'status',
@@ -127,16 +131,17 @@ class DashboardController extends Controller
 
         return view('dashboards.warehouse', [
 
-            'trucksToReceive'  => $trucksToReceive,
-            'trucksToDispatch' => $trucksToDispatch,
+            'trucksToReceive'     => $approvedReceipts,
+            'overdueCanceledOrders' => $overdueCanceledOrders,
+            'trucksToDispatch'    => $trucksToDispatch,
 
-            'totalProducts'    => $totalProducts,
-            'totalStockValue'  => $totalStockValue,
+            'totalProducts'       => $totalProducts,
+            'totalStockValue'     => $totalStockValue,
 
-            'recentActivity'   => $recentActivity,
+            'recentActivity'      => $recentActivity,
 
             // GLOBAL WIDGET
-            'lowStockProducts' => $this->lowStockProducts(),
+            'lowStockProducts'    => $this->lowStockProducts(),
         ]);
     }
 

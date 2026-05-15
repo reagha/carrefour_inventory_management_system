@@ -27,6 +27,12 @@ class ProductController extends Controller
      */
     public function create()
     {
+        $user = auth()->user();
+
+        if (! $user || ! in_array($user->role, ['admin', 'procurement'])) {
+            return view('products.request_assistance');
+        }
+
         $suppliers = Supplier::orderBy('name', 'asc')->get();
         return view('products.create', compact('suppliers'));
     }

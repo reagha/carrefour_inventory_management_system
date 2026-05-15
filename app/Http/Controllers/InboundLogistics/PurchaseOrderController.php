@@ -20,6 +20,8 @@ class PurchaseOrderController extends Controller
 
     public function index()
     {
+        $this->cancelOverduePurchaseOrders();
+
         $purchaseOrders = PurchaseOrder::with(['supplier', 'procurementManager', 'items.product'])
             ->orderByDesc('created_at')
             ->get();
@@ -39,6 +41,9 @@ class PurchaseOrderController extends Controller
     {
         $request->validate([
             'supplier_id' => ['required', 'exists:suppliers,id'],
+            'payment_terms' => ['required', 'in:pre,post'],
+            'issue_date' => ['required', 'date', 'before_or_equal:today'],
+            'due_date' => ['required', 'date', 'after_or_equal:issue_date'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
@@ -63,6 +68,9 @@ class PurchaseOrderController extends Controller
             $purchaseOrder = PurchaseOrder::create([
                 'supplier_id' => $request->input('supplier_id'),
                 'procurement_manager_id' => auth()->id(),
+                'payment_terms' => $request->input('payment_terms'),
+                'issue_date' => $request->input('issue_date'),
+                'due_date' => $request->input('due_date'),
                 'total_amount' => $totalAmount,
                 'status' => 'pending',
             ]);
@@ -92,6 +100,8 @@ class PurchaseOrderController extends Controller
 
     public function pendingReceipts()
     {
+        $this->cancelOverduePurchaseOrders();
+
         $purchaseOrders = PurchaseOrder::with(['supplier', 'procurementManager', 'items.product'])
             ->where('status', 'approved')
             ->orderBy('created_at')
@@ -100,10 +110,22 @@ class PurchaseOrderController extends Controller
         return view('inbound_logistics.purchase_orders.pending_receipts', compact('purchaseOrders'));
     }
 
+    private function cancelOverduePurchaseOrders()
+    {
+        PurchaseOrder::where('status', 'approved')
+            ->whereDate('due_date', '<', now()->toDateString())
+            ->update(['status' => 'canceled']);
+    }
+
     public function receive(PurchaseOrder $purchaseOrder)
     {
         if ($purchaseOrder->status !== 'approved') {
             abort(403, 'Only approved purchase orders can be received.');
+        }
+
+        if ($purchaseOrder->due_date && $purchaseOrder->due_date->isPast()) {
+            $purchaseOrder->update(['status' => 'canceled']);
+            abort(403, 'This purchase order has passed its due date and has been canceled.');
         }
 
         DB::transaction(function () use ($purchaseOrder) {

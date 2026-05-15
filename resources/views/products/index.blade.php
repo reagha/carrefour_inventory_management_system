@@ -2,11 +2,21 @@
 @section('title', 'Products')
 @section('content')
 
+@php
+    $canManageProducts = auth()->user() && in_array(auth()->user()->role, ['admin', 'procurement']);
+@endphp
+
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
     <h2 style="font-size:1.5rem;font-weight:700;color:#111827;margin:0;">Central Warehouse Inventory</h2>
-    <a href="{{ route('products.create') }}" style="background:#004B9B;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all .3s;">
-        <span>+</span> Add Product
-    </a>
+    @if($canManageProducts)
+        <a href="{{ route('products.create') }}" style="background:#004B9B;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all .3s;">
+            <span>+</span> Add Product
+        </a>
+    @else
+        <div style="background:#F3F4F6;border:1px solid #D1D5DB;border-radius:8px;padding:14px 18px;color:#374151;max-width:420px;text-align:right;font-size:.95rem;">
+            Need a new product added? Please seek assistance from the procurement department.
+        </div>
+    @endif
 </div>
 
 @if(session('success'))
@@ -44,7 +54,7 @@
                     <td><strong>{{ $product->name }}</strong></td>
                     <td>{{ $product->supplier->name ?? '—' }}</td>
                     <td>UGX {{ number_format($product->unit_cost) }}</td>
-                    <td @style="{ fontWeight: $product->quantity_in_warehouse <= $product->reorder_level ? '700' : '400', color: $product->quantity_in_warehouse <= $product->reorder_level ? '#B91C1C' : '#111827' }">{{ number_format($product->quantity_in_warehouse) }}</td>
+                    <td style="font-weight: {{ $product->quantity_in_warehouse <= $product->reorder_level ? '700' : '400' }}; color: {{ $product->quantity_in_warehouse <= $product->reorder_level ? '#B91C1C' : '#111827' }};">{{ number_format($product->quantity_in_warehouse) }}</td>
                     <td>{{ number_format($product->reorder_level) }}</td>
                     <td>
                         @if($product->quantity_in_warehouse == 0)
@@ -72,7 +82,11 @@
 @else
 <div style="background:#F3F4F6;border:1px solid #E5E7EB;border-radius:8px;padding:32px;text-align:center;color:#6B7280;">
     <p style="font-size:1rem;margin-bottom:16px;">No products found in the warehouse.</p>
-    <a href="{{ route('products.create') }}" style="background:#004B9B;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Add First Product</a>
+    @if($canManageProducts)
+        <a href="{{ route('products.create') }}" style="background:#004B9B;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Add First Product</a>
+    @else
+        <p style="margin:0;font-size:.95rem;color:#374151;">Ask procurement to add the first product to inventory.</p>
+    @endif
 </div>
 @endif
 

@@ -25,6 +25,9 @@
                     <th>Supplier</th>
                     <th>Total Amount</th>
                     <th>Status</th>
+                    <th>Payment</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
                     <th>Created By</th>
                     <th style="text-align:center;">Actions</th>
                 </tr>
@@ -40,10 +43,17 @@
                             <span class="badge badge-yellow">Pending</span>
                         @elseif($po->status === 'approved')
                             <span class="badge badge-blue">Approved</span>
-                        @else
+                        @elseif($po->status === 'received')
                             <span class="badge badge-green">Received</span>
+                        @elseif($po->status === 'canceled')
+                            <span class="badge badge-red">Canceled</span>
+                        @else
+                            <span class="badge badge-gray">{{ ucfirst($po->status) }}</span>
                         @endif
                     </td>
+                    <td>{{ $po->payment_terms === 'pre' ? 'Pre-payment' : 'Post-payment' }}</td>
+                    <td>{{ optional($po->issue_date)->format('Y-m-d') }}</td>
+                    <td>{{ optional($po->due_date)->format('Y-m-d') }}</td>
                     <td>{{ $po->procurementManager->name }}</td>
                     <td style="text-align:center;font-size:.9rem;">
                         @if($po->status === 'pending')

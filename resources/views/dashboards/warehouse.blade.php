@@ -9,6 +9,11 @@
         <div class="stat-value" style="color:#004B9B;">{{ $trucksToReceive }}</div>
         <div class="stat-sub">Approved POs pending receipt</div>
     </div>
+    <div class="stat-card" style="border-top:4px solid #D97706;">
+        <div class="stat-label">Overdue Canceled POs</div>
+        <div class="stat-value" style="color:#D97706;">{{ $overdueCanceledOrders }}</div>
+        <div class="stat-sub">Orders canceled after due date</div>
+    </div>
     <div class="stat-card" style="border-top:4px solid #E30613;">
         <div class="stat-label">Trucks to Dispatch</div>
         <div class="stat-value" style="color:#B91C1C;">{{ $trucksToDispatch }}</div>
@@ -23,6 +28,21 @@
         <div class="stat-label">Total Stock Value</div>
         <div class="stat-value" style="font-size:1.2rem;">UGX {{ number_format($totalStockValue) }}</div>
         <div class="stat-sub">Warehouse valuation</div>
+    </div>
+</div>
+
+<div class="section-card" style="margin-bottom:28px;">
+    <div class="section-header">
+        <div class="section-title">Warehouse Purchase Order Summary</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center;padding:16px 0 0;">
+        <div>
+            <p style="margin:0;font-weight:600;color:#111827;">Approved orders awaiting receipt</p>
+            <p style="margin:.5rem 0 0;color:#4B5563;">You have <strong>{{ $trucksToReceive }}</strong> approved purchase orders waiting to be received.</p>
+        </div>
+        <div style="text-align:right;">
+            <a href="{{ route('purchase-orders.pending-receipts') }}" style="background:#004B9B;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;">View Pending Receipts</a>
+        </div>
     </div>
 </div>
 

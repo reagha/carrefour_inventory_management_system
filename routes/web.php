@@ -40,11 +40,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // MODULE 2: PROCUREMENT ZONE
     // ==========================================
-    Route::middleware(['role:admin,procurement'])->group(function () {
-        Route::resource('products', ProductController::class);
-        Route::resource('suppliers', SupplierController::class);
-        Route::resource('purchase-orders', PurchaseOrderController::class)->except(['show']);
-        Route::patch('purchase-orders/{purchase_order}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+    // Warehouse users can view products, but only procurement/admin can create/edit/delete.
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('products', [ProductController::class, 'store'])->middleware('role:admin,procurement')->name('products.store');
+    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->middleware('role:admin,procurement')->name('products.edit');
+    Route::put('products/{product}', [ProductController::class, 'update'])->middleware('role:admin,procurement')->name('products.update');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->middleware('role:admin,procurement')->name('products.destroy');
+
+    Route::resource('suppliers', SupplierController::class);
+    Route::resource('purchase-orders', PurchaseOrderController::class)->except(['show']);
+    Route::patch('purchase-orders/{purchase_order}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+
+    // Warehouse also needs read-only access to the product catalog
+    Route::middleware(['role:admin,procurement,warehouse'])->group(function () {
+        Route::resource('products', ProductController::class)->only(['index', 'show']);
     });
 
     // ==========================================

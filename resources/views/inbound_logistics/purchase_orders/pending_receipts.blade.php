@@ -19,6 +19,8 @@
                     <th>PO #</th>
                     <th>Supplier</th>
                     <th>Total Amount</th>
+                    <th>Due Date</th>
+                    <th>Payment</th>
                     <th>Approved By</th>
                     <th>Items</th>
                     <th style="text-align:center;">Actions</th>
@@ -30,6 +32,8 @@
                     <td style="font-family:monospace;color:#6B7280;font-weight:600;">PO-{{ str_pad($po->id, 5, '0', STR_PAD_LEFT) }}</td>
                     <td><strong>{{ $po->supplier->name }}</strong></td>
                     <td style="font-weight:700;color:#111827;">UGX {{ number_format($po->total_amount) }}</td>
+                    <td>{{ optional($po->due_date)->format('Y-m-d') }}</td>
+                    <td>{{ $po->payment_terms === 'pre' ? 'Pre-payment' : 'Post-payment' }}</td>
                     <td>{{ $po->procurementManager->name }}</td>
                     <td style="font-size:.875rem;color:#6B7280;">{{ $po->items->count() }} item{{ $po->items->count() !== 1 ? 's' : '' }}</td>
                     <td style="text-align:center;">
